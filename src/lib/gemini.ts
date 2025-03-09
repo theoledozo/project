@@ -5,7 +5,7 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 
 export async function generateRecipe(ingredients: string[]) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `Génère une recette simple en français avec ces ingrédients : ${ingredients.join(', ')}. 
     Format souhaité :
