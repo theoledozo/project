@@ -56,6 +56,10 @@ export default function RecipeGenerator() {
     try {
       const suggestion = await generateRecipe(ingredients);
       
+      if (!suggestion) {
+        throw new Error('Pas de suggestion générée');
+      }
+
       const { error } = await supabase
         .from('recipes')
         .insert([{
@@ -68,7 +72,12 @@ export default function RecipeGenerator() {
       toast.success('Recette générée et sauvegardée !');
       fetchRecipes();
     } catch (error) {
-      toast.error('Erreur lors de la génération de la recette');
+      console.error('Erreur détaillée:', error);
+      if (error instanceof Error && error.message.includes('API_KEY_INVALID')) {
+        toast.error('Erreur de configuration API. Contactez l\'administrateur.');
+      } else {
+        toast.error('Erreur lors de la génération de la recette');
+      }
     } finally {
       setLoading(false);
     }
