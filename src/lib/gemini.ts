@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+const API_KEY = 'AIzaSyD35lHUoNUn5xigEOumQcGbdVkAziVHlis';
+const genAI = new GoogleGenerativeAI(API_KEY);
 
 export async function generateRecipe(ingredients: string[]) {
   try {
@@ -18,6 +19,9 @@ export async function generateRecipe(ingredients: string[]) {
     return response.text();
   } catch (error) {
     console.error('Erreur de génération:', error);
+    if (error instanceof Error) {
+      throw error;
+    }
     throw new Error('Erreur lors de la génération de la recette');
   }
 }
