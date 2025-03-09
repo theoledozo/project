@@ -55,16 +55,30 @@ export default function Inventory() {
 
   async function updateQuantity(id: number, newQuantity: number) {
     if (newQuantity <= 0) {
-      const { error } = await supabase
+      const itemToDelete = items.find(item => item.id === id);
+      if (!itemToDelete) return;
+
+      const { error: deleteError } = await supabase
         .from('inventory_items')
         .delete()
         .eq('id', id);
 
-      if (error) {
+      if (deleteError) {
         toast.error('Erreur lors de la suppression');
         return;
       }
-      toast.success('Article supprimé');
+
+      const { error: insertError } = await supabase
+        .from('shopping_items')
+        .insert([{ name: itemToDelete.name }]);
+
+      if (insertError) {
+        toast.error('Erreur lors de l\'ajout à la liste de courses');
+        return;
+      }
+
+      toast.success('Article supprimé et ajouté à la liste de courses');
+      fetchItems();
     } else {
       const { error } = await supabase
         .from('inventory_items')

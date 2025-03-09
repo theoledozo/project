@@ -16,6 +16,7 @@ export default function RecipeGenerator() {
   const [newIngredient, setNewIngredient] = useState('');
   const [loading, setLoading] = useState(false);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
     fetchRecipes();
@@ -74,19 +75,29 @@ export default function RecipeGenerator() {
   };
 
   const resetRecipes = async () => {
-    const { error } = await supabase
-      .from('recipes')
-      .delete()
-      .neq('id', '0');
-
-    if (error) {
-      toast.error('Erreur lors de la réinitialisation');
+    if (!window.confirm('Êtes-vous sûr de vouloir réinitialiser toutes les recettes ?')) {
       return;
     }
 
-    toast.success('Historique des recettes réinitialisé');
-    setIngredients([]);
-    setRecipes([]);
+    setIsResetting(true);
+    try {
+      const { error } = await supabase
+        .from('recipes')
+        .delete()
+        .neq('id', '0');
+
+      if (error) throw error;
+
+      setIngredients([]);
+      setNewIngredient('');
+      setRecipes([]);
+      fetchRecipes();
+      toast.success('Historique des recettes réinitialisé');
+    } catch (error) {
+      toast.error('Erreur lors de la réinitialisation');
+    } finally {
+      setIsResetting(false);
+    }
   };
 
   return (
@@ -160,10 +171,20 @@ export default function RecipeGenerator() {
       {recipes.length > 0 && (
         <button
           onClick={resetRecipes}
-          className="mt-6 w-full bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 flex items-center justify-center gap-2"
+          disabled={isResetting}
+          className="mt-6 w-full bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          <RotateCcw size={20} />
-          Réinitialiser l'historique
+          {isResetting ? (
+            <>
+              <Loader2 className="animate-spin" size={20} />
+              Réinitialisation...
+            </>
+          ) : (
+            <>
+              <RotateCcw size={20} />
+              Réinitialiser l'historique
+            </>
+          )}
         </button>
       )}
     </div>
