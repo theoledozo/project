@@ -93,7 +93,7 @@ export default function RecipeGenerator() {
       const { error } = await supabase
         .from('recipes')
         .delete()
-        .neq('id', '0');
+        .neq('id', '');
 
       if (error) throw error;
 
