@@ -181,7 +181,7 @@ export default function RecipeGenerator() {
         <button
           onClick={resetRecipes}
           disabled={isResetting}
-          className="mt-6 w-full bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="my-6 w-full bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           {isResetting ? (
             <>
