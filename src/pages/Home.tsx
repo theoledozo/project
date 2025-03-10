@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 const Home = () => {
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">Menu Principal</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center py-2">Application des amoureux</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Link to="/shopping-list" className="card">
