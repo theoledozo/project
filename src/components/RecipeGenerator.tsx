@@ -93,12 +93,12 @@ export default function RecipeGenerator() {
       const { error } = await supabase
         .from('recipes')
         .delete()
-        .gte('id', 0); // Condition bidon pour supprimer tout (workaround car Supabase exige un filtre)
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Condition qui fonctionne avec les UUID
 
-        if (error) {
-          console.error('Erreur lors de la suppression :', error.message);
-          return;
-        }
+      if (error) {
+        console.error('Erreur lors de la suppression :', error.message);
+        return;
+      }
      
 
       setIngredients([]);
