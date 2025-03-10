@@ -93,7 +93,7 @@ export default function RecipeGenerator() {
       const { error } = await supabase
         .from('recipes')
         .delete()
-        .neq('id', null); // Condition bidon pour supprimer tout (workaround car Supabase exige un filtre)
+        .gte('id', 0); // Condition bidon pour supprimer tout (workaround car Supabase exige un filtre)
 
         if (error) {
           console.error('Erreur lors de la suppression :', error.message);
@@ -185,7 +185,7 @@ export default function RecipeGenerator() {
         <button
           onClick={resetRecipes}
           disabled={isResetting}
-          className="mt-6 mb-8 w-full bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="mt-6 mb-12 w-full bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           {isResetting ? (
             <>
