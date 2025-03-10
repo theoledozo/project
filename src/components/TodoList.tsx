@@ -1,34 +1,86 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import toast from 'react-hot-toast';
 
 interface Todo {
   id: number;
   text: string;
   completed: boolean;
+  created_at: string;
 }
 
 const TodoList = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState('');
 
-  const addTodo = () => {
-    if (newTodo.trim()) {
-      setTodos([...todos, {
-        id: Date.now(),
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  async function fetchTodos() {
+    const { data, error } = await supabase
+      .from('todos')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      toast.error('Erreur lors du chargement des tâches');
+      return;
+    }
+    setTodos(data || []);
+  }
+
+  const addTodo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTodo.trim()) return;
+
+    const { error } = await supabase
+      .from('todos')
+      .insert([{ 
         text: newTodo.trim(),
         completed: false
       }]);
-      setNewTodo('');
+
+    if (error) {
+      toast.error('Erreur lors de l\'ajout de la tâche');
+      return;
     }
+
+    toast.success('Tâche ajoutée');
+    setNewTodo('');
+    fetchTodos();
   };
 
-  const toggleTodo = (id: number) => {
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
+  const toggleTodo = async (id: number) => {
+    const todo = todos.find(t => t.id === id);
+    if (!todo) return;
+
+    const { error } = await supabase
+      .from('todos')
+      .update({ completed: !todo.completed })
+      .eq('id', id);
+
+    if (error) {
+      toast.error('Erreur lors de la modification');
+      return;
+    }
+
+    fetchTodos();
   };
 
-  const deleteTodo = (id: number) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+  const deleteTodo = async (id: number) => {
+    const { error } = await supabase
+      .from('todos')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast.error('Erreur lors de la suppression');
+      return;
+    }
+
+    toast.success('Tâche supprimée');
+    fetchTodos();
   };
 
   return (
