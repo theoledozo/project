@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
+import { Plus } from 'lucide-react';
 
 interface Todo {
   id: number;
@@ -84,7 +85,7 @@ const TodoList = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="max-w-md mx-auto p-4">
       <h1 className="text-2xl text-center font-bold mb-6">Todo List</h1>
       
       <div className="flex gap-2 mb-6">
@@ -99,7 +100,7 @@ const TodoList = () => {
           onClick={addTodo}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-yellow-500"
         >
-          +
+           <Plus size={24} />
         </button>
       </div>
 
