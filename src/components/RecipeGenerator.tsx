@@ -93,7 +93,6 @@ export default function RecipeGenerator() {
       const { error } = await supabase
         .from('recipes')
         .delete()
-        .neq('id', '');
 
       if (error) throw error;
 
@@ -181,7 +180,7 @@ export default function RecipeGenerator() {
         <button
           onClick={resetRecipes}
           disabled={isResetting}
-          className="my-6 w-full bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="mt-6 mb-8 w-full bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           {isResetting ? (
             <>
