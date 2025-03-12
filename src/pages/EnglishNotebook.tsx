@@ -241,8 +241,8 @@ const EnglishNotebook = () => {
         {items.map(item => (
           <div key={item.id} className="bg-white p-4 rounded-lg shadow">
             <div className="mb-2">
-              <p className="font-semibold">{item.french_text}</p>
-              <p className="text-gray-600">{item.english_text}</p>
+              <p className="font-semibold">{item.english_text}</p>
+              <p className="text-gray-600">{item.french_text}</p>
               {item.notes && (
                 <p className="text-sm text-gray-500 mt-2">{item.notes}</p>
               )}
