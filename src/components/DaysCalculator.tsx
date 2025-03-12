@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { generateGeminiResponse } from '../lib/gemini';
 import toast from 'react-hot-toast';
@@ -10,7 +10,7 @@ interface WorkDay {
   hours: number;
   days: number;
   contract_type: 'Casual' | 'Piece Rate';
-  result: string;
+  days_counted: number;
   created_at: string;
 }
 
@@ -20,7 +20,31 @@ const DaysCalculator = () => {
   const [days, setDays] = useState('');
   const [contractType, setContractType] = useState<'Casual' | 'Piece Rate'>('Casual');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState('');
+  const [totalDays, setTotalDays] = useState(0);
+
+  useEffect(() => {
+    fetchTotalDays();
+  }, [person]);
+
+  const fetchTotalDays = async () => {
+    const { data, error } = await supabase
+      .from('work_days')
+      .select('days_counted')
+      .eq('person', person);
+
+    if (error) {
+      toast.error('Erreur lors du chargement des jours');
+      return;
+    }
+
+    const total = data.reduce((sum, record) => sum + record.days_counted, 0);
+    setTotalDays(total);
+  };
+
+  const extractDaysFromResponse = (response: string): number => {
+    const match = response.match(/: (\d+)/);
+    return match ? parseInt(match[1]) : 0;
+  };
 
   const calculateDays = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +69,8 @@ const DaysCalculator = () => {
         throw new Error('Pas de réponse générée');
       }
 
+      const daysCount = extractDaysFromResponse(response);
+
       // Sauvegarder dans Supabase
       const { error } = await supabase
         .from('work_days')
@@ -53,13 +79,15 @@ const DaysCalculator = () => {
           hours: Number(hours),
           days: Number(days),
           contract_type: contractType,
-          result: response
+          days_counted: daysCount
         }]);
 
       if (error) throw error;
       
-      setResult(response);
+      setTotalDays(prev => prev + daysCount);
       toast.success('Calcul effectué !');
+      setHours('');
+      setDays('');
     } catch (error) {
       console.error('Erreur:', error);
       toast.error('Erreur lors du calcul');
@@ -68,9 +96,24 @@ const DaysCalculator = () => {
     }
   };
 
+  const progressPercentage = (totalDays / 88) * 100;
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6">Calcul des jours - {person}</h1>
+
+      <div className="mb-8">
+        <div className="flex justify-between mb-2">
+          <span className="font-semibold">Progression</span>
+          <span>{totalDays}/88 jours</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-4">
+          <div
+            className="bg-blue-500 h-4 rounded-full transition-all duration-500"
+            style={{ width: `${Math.min(progressPercentage, 100)}%` }}
+          ></div>
+        </div>
+      </div>
       
       <form onSubmit={calculateDays} className="space-y-4">
         <div>
@@ -115,13 +158,6 @@ const DaysCalculator = () => {
           {loading ? 'Calcul en cours...' : 'Calculer'}
         </button>
       </form>
-
-      {result && (
-        <div className="mt-6 p-4 bg-white rounded shadow">
-          <h2 className="font-semibold mb-2">Résultat :</h2>
-          <p>{result}</p>
-        </div>
-      )}
     </div>
   );
 };
