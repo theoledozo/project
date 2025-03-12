@@ -34,13 +34,6 @@ const Home = () => {
           </div>
         </Link>
 
-        <Link to="/88-days" className="card">
-          <div className="p-4 bg-white rounded-lg shadow hover:shadow-lg transition">
-            <h2 className="text-xl font-semibold">88 Jours</h2>
-            <p className="text-gray-600">Calculez vos jours de farm</p>
-          </div>
-        </Link>
-
         <Link to="/english-notebook" className="card">
           <div className="p-4 bg-white rounded-lg shadow hover:shadow-lg transition">
             <h2 className="text-xl font-semibold">Carnet d'anglais</h2>
