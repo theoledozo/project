@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Pencil, Trash2, Search } from 'lucide-react';
+import { Pencil, Trash2, Search, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { generateGeminiResponse } from '../lib/gemini';
 
 interface Category {
   id: number;
@@ -29,6 +30,7 @@ const EnglishNotebook = () => {
   const [notes, setNotes] = useState('');
   const [categoryId, setCategoryId] = useState<number | ''>('');
   const [editingItem, setEditingItem] = useState<EnglishItem | null>(null);
+  const [isTranslating, setIsTranslating] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -145,6 +147,35 @@ const EnglishNotebook = () => {
     fetchItems();
   };
 
+  const handleTranslate = async () => {
+    if (!frenchText && !englishText) {
+      toast.error('Veuillez saisir au moins un texte à traduire');
+      return;
+    }
+
+    setIsTranslating(true);
+    try {
+      const textToTranslate = frenchText || englishText;
+      const prompt = `Traduit moi ${textToTranslate}, je veux pas d'information supplementaire uniquement la traduction avec des / si il y a plusieurs mot, max trois mot et pas de phrase de reponse`;
+
+      const translation = await generateGeminiResponse(prompt);
+      
+      if (!translation) {
+        throw new Error('Erreur de traduction');
+      }
+
+      if (frenchText) {
+        setEnglishText(translation);
+      } else {
+        setFrenchText(translation);
+      }
+    } catch (error) {
+      toast.error('Erreur lors de la traduction');
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6">Carnet d'anglais</h1>
@@ -202,12 +233,30 @@ const EnglishNotebook = () => {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600"
-        >
-          {editingItem ? 'Modifier' : 'Ajouter'}
-        </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600"
+          >
+            {editingItem ? 'Modifier' : 'Ajouter'}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleTranslate}
+            disabled={isTranslating || (!frenchText && !englishText)}
+            className="w-full bg-green-500 text-white p-3 rounded hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {isTranslating ? (
+              <>
+                <Loader2 className="animate-spin" size={20} />
+                Traduction en cours...
+              </>
+            ) : (
+              'Traduire avec l\'IA'
+            )}
+          </button>
+        </div>
       </form>
 
       {/* Barre de recherche et filtres */}
