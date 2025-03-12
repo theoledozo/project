@@ -3,7 +3,7 @@ import { ListChecks, ChefHat, Package, Home, CheckSquare, Calendar, BookOpen } f
 
 const Navigation = () => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-lg mt-6">
+    <nav className="fixed sm:sticky bottom-0 left-0 right-0 bg-white shadow-lg mt-6">
       <div className="flex justify-around p-4">
         <Link to="/" className="flex flex-col items-center">
           <Home size={24} />
