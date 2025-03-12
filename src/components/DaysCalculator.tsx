@@ -224,7 +224,7 @@ const DaysCalculator = () => {
         </button>
       </form>
 
-      <div className="mt-8">
+      <div className="my-8">
         <h2 className="text-xl font-bold mb-4">Historique des payslips</h2>
         <div className="space-y-4">
           {payslips.map((payslip) => (
