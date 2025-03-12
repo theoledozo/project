@@ -9,6 +9,8 @@
       - `days` (integer, not null)
       - `contract_type` (text, not null)
       - `days_counted` (integer, not null)
+      - `start_date` (date, not null)
+      - `end_date` (date, not null)
       - `created_at` (timestamp with time zone, default: now())
 */
 
@@ -19,6 +21,8 @@ CREATE TABLE IF NOT EXISTS work_days (
     days integer NOT NULL,
     contract_type text NOT NULL,
     days_counted integer NOT NULL,
+    start_date date NOT NULL,
+    end_date date NOT NULL,
     created_at timestamptz DEFAULT now()
 );
 

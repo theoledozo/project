@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { generateGeminiResponse } from '../lib/gemini';
 import toast from 'react-hot-toast';
 import { supabase } from '../lib/supabase';
+import { Trash2 } from 'lucide-react';
 
 interface WorkDay {
   id: number;
@@ -11,6 +12,8 @@ interface WorkDay {
   days: number;
   contract_type: 'Casual' | 'Piece Rate';
   days_counted: number;
+  start_date: string;
+  end_date: string;
   created_at: string;
 }
 
@@ -18,12 +21,16 @@ const DaysCalculator = () => {
   const { person } = useParams();
   const [hours, setHours] = useState('');
   const [days, setDays] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [contractType, setContractType] = useState<'Casual' | 'Piece Rate'>('Casual');
   const [loading, setLoading] = useState(false);
   const [totalDays, setTotalDays] = useState(0);
+  const [payslips, setPayslips] = useState<WorkDay[]>([]);
 
   useEffect(() => {
     fetchTotalDays();
+    fetchPayslips();
   }, [person]);
 
   const fetchTotalDays = async () => {
@@ -41,14 +48,45 @@ const DaysCalculator = () => {
     setTotalDays(total);
   };
 
+  const fetchPayslips = async () => {
+    const { data, error } = await supabase
+      .from('work_days')
+      .select('*')
+      .eq('person', person)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      toast.error('Erreur lors du chargement des payslips');
+      return;
+    }
+
+    setPayslips(data || []);
+  };
+
   const extractDaysFromResponse = (response: string): number => {
     const match = response.match(/: (\d+)/);
     return match ? parseInt(match[1]) : 0;
   };
 
+  const deletePayslip = async (id: number) => {
+    const { error } = await supabase
+      .from('work_days')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast.error('Erreur lors de la suppression');
+      return;
+    }
+
+    toast.success('Payslip supprimé');
+    fetchPayslips();
+    fetchTotalDays();
+  };
+
   const calculateDays = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!hours.trim() || !days.trim()) {
+    if (!hours.trim() || !days.trim() || !startDate || !endDate) {
       toast.error('Veuillez remplir tous les champs');
       return;
     }
@@ -79,7 +117,9 @@ const DaysCalculator = () => {
           hours: Number(hours),
           days: Number(days),
           contract_type: contractType,
-          days_counted: daysCount
+          days_counted: daysCount,
+          start_date: startDate,
+          end_date: endDate
         }]);
 
       if (error) throw error;
@@ -88,6 +128,9 @@ const DaysCalculator = () => {
       toast.success('Calcul effectué !');
       setHours('');
       setDays('');
+      setStartDate('');
+      setEndDate('');
+      fetchPayslips();
     } catch (error) {
       console.error('Erreur:', error);
       toast.error('Erreur lors du calcul');
@@ -115,7 +158,29 @@ const DaysCalculator = () => {
         </div>
       </div>
       
-      <form onSubmit={calculateDays} className="space-y-4">
+      <form onSubmit={calculateDays} className="space-y-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-2">Date de début</label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2">Date de fin</label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+        </div>
+
         <div>
           <label className="block mb-2">Nombre d'heures travaillées</label>
           <input
@@ -158,6 +223,31 @@ const DaysCalculator = () => {
           {loading ? 'Calcul en cours...' : 'Calculer'}
         </button>
       </form>
+
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-4">Historique des payslips</h2>
+        <div className="space-y-4">
+          {payslips.map((payslip) => (
+            <div key={payslip.id} className="bg-white p-4 rounded-lg shadow">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="font-semibold">
+                    {new Date(payslip.start_date).toLocaleDateString()} - {new Date(payslip.end_date).toLocaleDateString()}
+                  </p>
+                  <p className="text-gray-600">{payslip.hours} heures travaillées</p>
+                  <p className="text-gray-600">{payslip.days} jours travaillés</p>
+                </div>
+                <button
+                  onClick={() => deletePayslip(payslip.id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <Trash2 size={20} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
