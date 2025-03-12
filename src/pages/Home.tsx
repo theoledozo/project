@@ -33,6 +33,13 @@ const Home = () => {
             <p className="text-gray-600">Gérez vos tâches quotidiennes</p>
           </div>
         </Link>
+
+        <Link to="/88-days" className="card">
+          <div className="p-4 bg-white rounded-lg shadow hover:shadow-lg transition">
+            <h2 className="text-xl font-semibold">88 Jours</h2>
+            <p className="text-gray-600">Calculez vos jours de farm</p>
+          </div>
+        </Link>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ListChecks, ChefHat, Package, Home, CheckSquare } from 'lucide-react';
+import { ListChecks, ChefHat, Package, Home, CheckSquare, Calendar } from 'lucide-react';
 
 const Navigation = () => {
   return (
@@ -24,6 +24,10 @@ const Navigation = () => {
         <Link to="/todo" className="flex flex-col items-center">
           <CheckSquare size={24} />
           <span>Todo</span>
+        </Link>
+        <Link to="/88-days" className="flex flex-col items-center">
+          <Calendar size={24} />
+          <span>88 Jours</span>
         </Link>
       </div>
     </nav>

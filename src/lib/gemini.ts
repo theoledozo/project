@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 const API_KEY = 'AIzaSyD35lHUoNUn5xigEOumQcGbdVkAziVHlis';
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-export async function generateRecipe(ingredients: string[]) {
+export async function generateRecipe(ingredients: string[]): Promise<string | null> {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -25,3 +25,16 @@ export async function generateRecipe(ingredients: string[]) {
     throw new Error('Erreur lors de la génération de la recette');
   }
 }
+
+export async function generateGeminiResponse(prompt: string): Promise<string | null> {
+  try {
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    return response.text();
+  } catch (error) {
+    console.error('Erreur Gemini:', error);
+    return null;
+  }
+}
+
