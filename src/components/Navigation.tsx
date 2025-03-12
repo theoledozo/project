@@ -10,24 +10,16 @@ const Navigation = () => {
           
         </Link>
         <Link to="/shopping-list" className="flex flex-col items-center">
-          <ListChecks size={24} />
-        
+          <ListChecks size={24} />        
         </Link>
         <Link to="/inventory" className="flex flex-col items-center">
-          <Package size={24} />
-        
+          <Package size={24} />       
         </Link>
         <Link to="/recipes" className="flex flex-col items-center">
-          <ChefHat size={24} />
-        
+          <ChefHat size={24} />        
         </Link>
         <Link to="/todo" className="flex flex-col items-center">
-          <CheckSquare size={24} />
-        
-        </Link>
-        <Link to="/88-days" className="flex flex-col items-center">
-          <Calendar size={24} />
-        
+          <CheckSquare size={24} />       
         </Link>
         <Link to="/english-notebook" className="flex flex-col items-center">
           <BookOpen size={24} />
