@@ -152,6 +152,16 @@ const EnglishNotebook = () => {
       {/* Formulaire d'ajout/modification */}
       <form onSubmit={handleSubmit} className="bg-white p-4 rounded-lg shadow mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+            <label className="block mb-2">Anglais</label>
+            <input
+              type="text"
+              value={englishText}
+              onChange={(e) => setEnglishText(e.target.value)}
+              className="w-full p-2 border rounded"
+              placeholder="Texte en anglais"
+            />
+          </div>
           <div>
             <label className="block mb-2">Français</label>
             <input
@@ -160,16 +170,6 @@ const EnglishNotebook = () => {
               onChange={(e) => setFrenchText(e.target.value)}
               className="w-full p-2 border rounded"
               placeholder="Texte en français"
-            />
-          </div>
-          <div>
-            <label className="block mb-2">Anglais</label>
-            <input
-              type="text"
-              value={englishText}
-              onChange={(e) => setEnglishText(e.target.value)}
-              className="w-full p-2 border rounded"
-              placeholder="Texte en anglais"
             />
           </div>
         </div>
