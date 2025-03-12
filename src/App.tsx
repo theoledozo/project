@@ -10,6 +10,7 @@ import TodoList from './components/TodoList';
 import Navigation from './components/Navigation';
 import EightyEightDays from './pages/EightyEightDays';
 import DaysCalculator from './components/DaysCalculator';
+import EnglishNotebook from './pages/EnglishNotebook';
 
 function App() {
   const [activeTab, setActiveTab] = useState<'inventory' | 'shopping' | 'recipes'>('shopping');
@@ -26,6 +27,7 @@ function App() {
           <Route path="/todo" element={<TodoList />} />
           <Route path="/88-days" element={<EightyEightDays />} />
           <Route path="/88-days/:person" element={<DaysCalculator />} />
+          <Route path="/english-notebook" element={<EnglishNotebook />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <Navigation />
